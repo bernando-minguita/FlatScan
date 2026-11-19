@@ -1,0 +1,20 @@
+# FlatScan — runtime dependencies.
+# Verified on Windows 11 with Python 3.14.7.
+# Install with:  python -m pip install -r requirements.txt
+
+PySide6>=6.12,<7
+numpy>=2.3,<3
+Pillow>=12.0,<13
+PyMuPDF>=2.0,<3
+
+# OpenCV is used headlessly for image processing. Qt already provides the GUI,
+# so install ONE of these, not both:
+#   opencv-python-headless  (recommended; no duplicate Qt plugins)
+#   opencv-python           (only if another project already needs it)
+opencv-python-headless>=5.0,<6
+
+# Development / test tooling
+pytest>=9,<10
+
+# Optional packaging (see README "Packaging"):
+# pyinstaller>=6.0

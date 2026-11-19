@@ -1,0 +1,111 @@
+# ---------------------------------------------------------------- Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+.Python
+*.egg-info/
+*.egg
+.installed.cfg
+MANIFEST
+pip-wheel-metadata/
+.eggs/
+eggs/
+
+# ------------------------------------------------------------ Virtual envs
+.venv/
+.venv*/
+venv/
+venv*/
+ENV/
+env/
+.env
+.env.*
+!.env.example
+.python-version
+
+# ------------------------------------------------------- Test / tool output
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+report.xml
+junit*.xml
+pytest_*.txt
+pytest_out.txt
+pytest_err.txt
+.ipynb_checkpoints/
+
+# ------------------------------------------------------- Packaging output
+# PyInstaller / installer artefacts (see README "Packaging").
+build/
+dist/
+*.spec
+*.exe
+*.msi
+*.app
+*.dmg
+*.pkg
+
+# ------------------------------------------------------- Runtime data
+# The application writes its SQLite database, portable project files,
+# thumbnails, exports, logs and settings here at runtime. Never publish a
+# developer's real documents or history.
+storage/*
+!storage/.gitkeep
+
+# SQLite runs in WAL mode, so the -wal and -shm sidecars appear next to any
+# database the app creates. They are as sensitive as the database itself.
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Atomic writes: the project sidecar uses "<id>.json.tmp" and PDF export uses
+# "*.part", both swapped into place with os.replace(). A leftover means a crash.
+*.tmp
+*.part
+*.log
+
+# --------------------------------------------------------- Backups / merges
+*.bak
+*.orig
+*.rej
+*.save
+
+# ----------------------------------------------------------------- Editors
+# The whole editor folder stays local: VS Code rewrites settings.json on its
+# own (e.g. python.terminal.useEnvFile), which would show up as noise in diffs.
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# AI-assistant rule files are local tooling, not project content.
+.clinerules/
+.freebuff/
+
+# --------------------------------------------------------------- OS noise
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+._*
+
+# ------------------------------------------------------ Local scratch files
+# Ad-hoc scripts and dumps created while auditing the codebase. Underscore
+# prefix keeps them out of the package and out of the repository.
+/_*.py
+/_*.txt
+/scratch/
+/staged.txt
+

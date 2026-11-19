@@ -1,0 +1,69 @@
+{
+  "profiles": [
+    {
+      "name": "Iqama",
+      "description": "Resident identity card (ID-1 format). Verify or calibrate the measured size of your card before relying on the physical output.",
+      "width_mm": 85.6,
+      "height_mm": 53.98,
+      "dpi": 300,
+      "format": "JPEG",
+      "quality": 95,
+      "orientation": "landscape",
+      "filename_prefix": "iqama",
+      "active": true,
+      "builtin": true
+    },
+    {
+      "name": "Driving License",
+      "description": "Driving licence card (ID-1 format). Measure your own card to confirm the physical dimensions.",
+      "width_mm": 85.6,
+      "height_mm": 53.98,
+      "dpi": 300,
+      "format": "JPEG",
+      "quality": 95,
+      "orientation": "landscape",
+      "filename_prefix": "driving_license",
+      "active": true,
+      "builtin": true
+    },
+    {
+      "name": "Istimara",
+      "description": "Vehicle registration document. Istimara printouts vary by issue; enter the measured paper size (A4 is only a starting point).",
+      "width_mm": 210.0,
+      "height_mm": 297.0,
+      "dpi": 300,
+      "format": "PDF",
+      "quality": 95,
+      "orientation": "portrait",
+      "filename_prefix": "istimara",
+      "active": true,
+      "builtin": true
+    },
+    {
+      "name": "Passport",
+      "description": "Passport data page scanned or photographed. ICAO TD3 data pages are commonly 125 × 88 mm — verify with your document.",
+      "width_mm": 125.0,
+      "height_mm": 88.0,
+      "dpi": 300,
+      "format": "JPEG",
+      "quality": 95,
+      "orientation": "landscape",
+      "filename_prefix": "passport",
+      "active": true,
+      "builtin": true
+    },
+    {
+      "name": "Custom Card",
+      "description": "Generic card profile. Enter the measured width and height of the document you are digitising.",
+      "width_mm": 85.6,
+      "height_mm": 53.98,
+      "dpi": 300,
+      "format": "PNG",
+      "quality": 95,
+      "orientation": "landscape",
+      "filename_prefix": "card",
+      "active": true,
+      "builtin": true
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+# Normalise line endings so a Windows checkout and a Linux checkout produce
+# identical diffs. Text files are stored with LF in the repository and checked
+# out with the platform default.
+* text=auto eol=lf
+
+# Windows-only scripts keep CRLF so they run in cmd.exe.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary assets must never be line-ending converted.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.db binary
+*.exe binary
+*.dll binary
+*.pyd binary
+
+# Keep language statistics honest.
+*.md text
+*.py text
+*.qss text
+*.sql text
+*.json text
+*.yml text
+*.ini text
