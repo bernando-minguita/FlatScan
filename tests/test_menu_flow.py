@@ -297,7 +297,7 @@ def test_interpolation_change_is_undoable(qapp, context, photo, tmp_path) -> Non
 def test_close_project_clears_the_studio(qapp, context, photo, tmp_path) -> None:
     page = CorrectionStudioPage(context)
     page._begin_new_document(_loaded(photo, tmp_path))
-    page._save_project(notify=False)
+    page._save_project(notify=False, ask_filename=False)
     assert page.loaded is not None
 
     with patch("ui.correction_studio.QMessageBox", _YesBox):
@@ -320,7 +320,7 @@ def test_loaded_project_restores_saved_measurements(qapp, context, photo, tmp_pa
     page.width_spin.setValue(101.5)
     page.height_spin.setValue(54.25)
     page.dpi_spin.setValue(600)
-    page._save_project(notify=False)
+    page._save_project(notify=False, ask_filename=False)
     record = page.project
     assert record.settings["width_mm"] == pytest.approx(101.5)
     assert record.settings["dpi"] == 600
@@ -337,7 +337,7 @@ def test_loaded_project_restores_saved_measurements(qapp, context, photo, tmp_pa
 def test_revert_restores_the_saved_state(qapp, context, photo, tmp_path) -> None:
     page = CorrectionStudioPage(context)
     page._begin_new_document(_loaded(photo, tmp_path))
-    page._save_project(notify=False)
+    page._save_project(notify=False, ask_filename=False)
     saved_width = page.width_spin.value()
 
     page.width_spin.setValue(saved_width + 10)

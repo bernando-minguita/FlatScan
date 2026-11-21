@@ -537,7 +537,7 @@ class CorrectionStudioPage(QWidget):
         self.save_button = QPushButton("Save project")
         self.save_button.setIcon(make_icon("save", "#334155", 15))
         # clicked emits checked=False; bind it away so notify keeps its default.
-        self.save_button.clicked.connect(lambda checked=False: self._save_project())
+        self.save_button.clicked.connect(lambda checked=False: self._save_project(ask_filename=True))
         self.export_button = QPushButton("Export…")
         self.export_button.setObjectName("Primary")
         self.export_button.setIcon(make_icon("export", "#FFFFFF", 15))
@@ -563,7 +563,7 @@ class CorrectionStudioPage(QWidget):
             "Ctrl+Z": self._undo,
             "Ctrl+Shift+Z": self._redo,
             "Ctrl+Y": self._redo,
-            "Ctrl+S": self._save_project,
+            "Ctrl+S": lambda: self._save_project(ask_filename=True),
             "Ctrl+Shift+S": self._save_project_as,
             "Ctrl+W": self._close_project,
             "Ctrl+E": self._export,
@@ -704,7 +704,8 @@ class CorrectionStudioPage(QWidget):
 
     # --------------------------------------------------------------- loading
     def _choose_file(self) -> None:
-        path, _ = QFileDialog.getOpenFileName(self, "Open document photo", "", IMAGE_FILE_FILTER)
+        folder = str(self.ctx.config.get("project_dir"))
+        path, _ = QFileDialog.getOpenFileName(self, "Open document photo", folder, IMAGE_FILE_FILTER)
         if path:
             self.load_image_path(path)
 
@@ -959,7 +960,8 @@ class CorrectionStudioPage(QWidget):
         )
 
     def _import_pdf(self) -> None:
-        path, _ = QFileDialog.getOpenFileName(self, "Import PDF pages", "", PDF_FILE_FILTER)
+        folder = str(self.ctx.config.get("project_dir"))
+        path, _ = QFileDialog.getOpenFileName(self, "Import PDF pages", folder, PDF_FILE_FILTER)
         if not path:
             return
         dialog = PdfImportDialog(path, self.ctx.config.resolve_dir("temp_dir"), self)
@@ -1354,11 +1356,30 @@ class CorrectionStudioPage(QWidget):
         self.preview.set_compare(enabled)
 
     # --------------------------------------------------------------- actions
-    def _save_project(self, notify: bool = True) -> bool:
-        """Persist the current document to history. Returns True on success."""
+    def _save_project(self, notify: bool = True, ask_filename: bool = False) -> bool:
+        """Persist the current document to history. Returns True on success.
 
+        When ``ask_filename`` is true and this is a first save (no user-chosen
+        project file yet), a file dialog prompts the user for a ``.json`` path.
+        """
         if self.loaded is None or self.undo is None:
             return False
+
+        chosen_path: str | None = None
+        if ask_filename and (self.project is None or not self.project.project_file_path):
+            suggested_name = Path(self.loaded.display_name).stem if self.loaded else "Untitled"
+            suggested_dir = Path(self.ctx.config.get("project_dir"))
+            path, _ = QFileDialog.getSaveFileName(
+                self,
+                "Save project",
+                str(suggested_dir / f"{suggested_name}.json"),
+                "FlatScan project (*.json);;All files (*.*)",
+            )
+            if not path:
+                return False
+            chosen_path = path
+        elif self.project is not None and self.project.project_file_path:
+            chosen_path = self.project.project_file_path
         document = self.document or {}
         image = document.get("image")
         name = self.project.name if self.project else Path(self.loaded.display_name).stem
@@ -1378,6 +1399,7 @@ class CorrectionStudioPage(QWidget):
                 dpi=self.dpi_spin.value(),
                 width_mm=self.width_spin.value(),
                 height_mm=self.height_spin.value(),
+                project_file_path=chosen_path or "",
             )
         except Exception as exc:  # noqa: BLE001 - surfaced to the user
             QMessageBox.critical(self, "Could not save the project", str(exc))
@@ -1389,7 +1411,7 @@ class CorrectionStudioPage(QWidget):
             logger.warning("Could not persist the recent profile: %s", exc)
         # The database write succeeded, but the portable JSON sidecar can fail
         # independently (disk full, permission error) — tell the user.
-        project_file = self.ctx.projects.project_file(self.project.id)
+        project_file = Path(self.project.project_file_path) if self.project.project_file_path else self.ctx.projects.project_file(self.project.id)
         partial = not project_file.exists()
         self.file_chip.setText(f"{name} · {self.loaded.display_name}")
         if partial:
@@ -1418,7 +1440,7 @@ class CorrectionStudioPage(QWidget):
 
         if self.loaded is None or self.undo is None:
             return
-        if not self._save_project(notify=False):
+        if not self._save_project(notify=False, ask_filename=False):
             return
         suggested = self.ctx.projects.project_file(self.project.id)
         path, _ = QFileDialog.getSaveFileName(
@@ -1549,7 +1571,7 @@ class CorrectionStudioPage(QWidget):
         paths = dialog.exported_paths()
         if not paths:
             return
-        self._save_project(notify=False)
+        self._save_project(notify=False, ask_filename=False)
         if self.project is not None:
             self.project.output_path = str(paths[0])
             self.ctx.projects.mark_exported(self.project)

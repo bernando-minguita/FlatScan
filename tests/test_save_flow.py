@@ -93,14 +93,14 @@ def test_save_button_click_shows_toast_and_clears_dirty(qapp, context, photo, tm
 def test_dimension_change_marks_dirty_until_saved(qapp, context, photo, tmp_path) -> None:
     page = CorrectionStudioPage(context)
     page._begin_new_document(_loaded(photo, tmp_path))
-    page._save_project(notify=False)
+    page._save_project(notify=False, ask_filename=False)
     assert page.save_chip.text().startswith("Saved ")
 
     # A non-undoable dimension tweak still counts as an unsaved change.
     page.width_spin.setValue(page.width_spin.value() + 5)
     assert page.save_chip.text() == "Unsaved changes *"
 
-    page._save_project(notify=False)
+    page._save_project(notify=False, ask_filename=False)
     assert page.save_chip.text().startswith("Saved ")
     page.deleteLater()
 
@@ -110,7 +110,7 @@ def test_undo_back_to_saved_state_clears_dirty(qapp, context, photo, tmp_path) -
     page = CorrectionStudioPage(context)
     page._begin_new_document(_loaded(photo, tmp_path))
     _make_edit(page)
-    page._save_project(notify=False)
+    page._save_project(notify=False, ask_filename=False)
     _make_edit(page)
     assert page._is_dirty()
 
@@ -123,7 +123,7 @@ def test_loaded_project_is_not_dirty(qapp, context, photo, tmp_path) -> None:
     page = CorrectionStudioPage(context)
     page._begin_new_document(_loaded(photo, tmp_path))
     _make_edit(page)
-    page._save_project(notify=False)
+    page._save_project(notify=False, ask_filename=False)
     record = page.project
 
     fresh = CorrectionStudioPage(context)

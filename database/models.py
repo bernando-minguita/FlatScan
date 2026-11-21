@@ -68,6 +68,7 @@ class ProjectRecord:
     source_path: str = ""
     output_path: str = ""
     thumbnail_path: str = ""
+    project_file_path: str = ""  # User-chosen .json path (empty = default storage/projects/{id}.json)
     profile_id: int | None = None
     profile_name: str = ""
     corners: list = field(default_factory=list)
@@ -97,6 +98,7 @@ class ProjectRecord:
             source_path=row["source_path"] or "",
             output_path=row["output_path"] or "",
             thumbnail_path=row["thumbnail_path"] or "",
+            project_file_path=row["project_file_path"] or "",
             profile_id=row["profile_id"],
             profile_name=row["profile_name"] or "",
             corners=corners,

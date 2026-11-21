@@ -366,7 +366,7 @@ class MainWindow(QMainWindow):
 
     def _save_project(self) -> None:
         self.navigate("studio")
-        self.studio._save_project()
+        self.studio._save_project(ask_filename=True)
 
     def _save_project_as(self) -> None:
         self.navigate("studio")
@@ -549,7 +549,8 @@ class MainWindow(QMainWindow):
     # ----------------------------------------------------------------- actions
     def _new_correction(self) -> None:
         self.navigate("studio")
-        result = QFileDialog.getOpenFileName(self, "Open a document photo", "", "Images (*.jpg *.jpeg *.png *.bmp *.tif *.tiff *.webp)")
+        folder = str(self.ctx.config.get("project_dir"))
+        result = QFileDialog.getOpenFileName(self, "Open a document photo", folder, "Images (*.jpg *.jpeg *.png *.bmp *.tif *.tiff *.webp)")
         if result and result[0]:
             self.studio.load_image_path(result[0])
             self._add_recent_file(result[0])

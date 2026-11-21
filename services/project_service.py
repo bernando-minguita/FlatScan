@@ -47,8 +47,15 @@ class ProjectService:
             return ""
 
     def _write_project_file(self, record: ProjectRecord) -> Path | None:
-        """Write the portable JSON sidecar; None means the write failed."""
-        path = self.project_file(record.id)
+        """Write the portable JSON sidecar; None means the write failed.
+
+        Uses ``record.project_file_path`` when the user has chosen a custom
+        location; otherwise falls back to ``storage/projects/{id}.json``.
+        """
+        if record.project_file_path:
+            path = Path(record.project_file_path)
+        else:
+            path = self.project_file(record.id)
         return self._write_payload(path, self.project_payload(record))
 
     @staticmethod
@@ -114,11 +121,14 @@ class ProjectService:
         dpi: int | None = None,
         width_mm: float | None = None,
         height_mm: float | None = None,
+        project_file_path: str = "",
     ) -> ProjectRecord:
         is_new = record is None or not record.id
         if is_new:
             record = ProjectRecord(id=str(uuid.uuid4()), created_at="")
         assert record is not None
+        if project_file_path:
+            record.project_file_path = project_file_path
         if project_name:
             record.name = project_name
         elif not record.name:

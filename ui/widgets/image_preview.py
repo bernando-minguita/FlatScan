@@ -5,9 +5,17 @@ from __future__ import annotations
 import numpy as np
 from PySide6.QtCore import QPointF, QRectF, Qt, Signal
 from PySide6.QtGui import QColor, QFont, QPainter, QPen, QPixmap
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QApplication, QWidget
 
 from ui.image_utils import bgr_to_pixmap
+from ui.styles.theme import DARK, LIGHT, THEMES
+
+
+def _current_theme_colors() -> dict:
+    """Return the colour tokens for the currently active theme."""
+    app = QApplication.instance()
+    theme_name = app.property("flatscan_theme") if app else "light"
+    return THEMES.get((theme_name or "light").lower(), LIGHT)
 
 
 class ImagePreview(QWidget):
@@ -74,16 +82,17 @@ class ImagePreview(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
-        painter.fillRect(self.rect(), QColor("#EEF2F7"))
+        painter.fillRect(self.rect(), QColor(_current_theme_colors()["surface"]))
 
         rect = self._target_rect()
         if self._after is None and self._before is None:
-            pen = QPen(QColor("#CBD5E1"))
+            colors = _current_theme_colors()
+            pen = QPen(QColor(colors["border"]))
             pen.setStyle(Qt.PenStyle.DashLine)
             painter.setPen(pen)
             painter.setBrush(Qt.BrushStyle.NoBrush)
             painter.drawRoundedRect(QRectF(self.rect()).adjusted(12, 12, -12, -12), 10, 10)
-            painter.setPen(QColor("#64748B"))
+            painter.setPen(QColor(colors["text_muted"]))
             font = QFont(painter.font())
             font.setPixelSize(13)
             painter.setFont(font)
@@ -106,13 +115,15 @@ class ImagePreview(QWidget):
             painter.drawPixmap(rect, self._after, QRectF(self._after.rect()))
             painter.restore()
 
-            painter.setPen(QPen(QColor("#2563EB"), 2))
+            colors = _current_theme_colors()
+            accent = QColor(colors["accent"])
+            painter.setPen(QPen(accent, 2))
             painter.drawLine(QPointF(split_x, rect.top()), QPointF(split_x, rect.bottom()))
             handle = QRectF(split_x - 13, rect.center().y() - 16, 26, 32)
             painter.setBrush(QColor("#FFFFFF"))
-            painter.setPen(QPen(QColor("#2563EB"), 1.5))
+            painter.setPen(QPen(accent, 1.5))
             painter.drawRoundedRect(handle, 7, 7)
-            painter.setPen(QPen(QColor("#2563EB"), 2))
+            painter.setPen(QPen(accent, 2))
             painter.drawLine(QPointF(split_x - 5, rect.center().y() - 3), QPointF(split_x - 5, rect.center().y() + 3))
             painter.drawLine(QPointF(split_x + 5, rect.center().y() - 3), QPointF(split_x + 5, rect.center().y() + 3))
 
@@ -123,7 +134,8 @@ class ImagePreview(QWidget):
 
         if self._after is not None:
             label = f"{self._after.width()} × {self._after.height()} px"
-            painter.setPen(QColor("#475569"))
+            colors = _current_theme_colors()
+            painter.setPen(QColor(colors["text_muted"]))
             font = QFont(painter.font())
             font.setPixelSize(10)
             painter.setFont(font)
@@ -136,8 +148,9 @@ class ImagePreview(QWidget):
 
     @staticmethod
     def _draw_tag(painter: QPainter, top_left: QPointF, text: str) -> None:
+        colors = _current_theme_colors()
         rect = QRectF(top_left.x(), top_left.y(), 54, 20)
-        painter.setBrush(QColor(15, 23, 42, 170))
+        painter.setBrush(QColor(colors["surface"]))
         painter.setPen(Qt.PenStyle.NoPen)
         painter.drawRoundedRect(rect, 5, 5)
         painter.setPen(QColor("#FFFFFF"))

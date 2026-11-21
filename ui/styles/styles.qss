@@ -6,7 +6,7 @@
     color: @[text];
 }
 
-QMainWindow, QWidget#Root, QWidget#Page, QScrollArea, QStackedWidget {
+QMainWindow, QWidget#Root, QWidget#Page, QScrollArea, QStackedWidget, QDialog {
     background: @[background];
 }
 

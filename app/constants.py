@@ -54,6 +54,10 @@ def _resolve_base_dir() -> Path:
     When frozen by PyInstaller the executable directory is used if it is
     writable (portable installs), otherwise a per-user folder is used so the
     application also works from Program Files.
+
+    By default the application stores its data under the user's Documents
+    folder (``Documents/FlatScan/storage/...``), creating the directories
+    on first launch if they do not exist.
     """
 
     if getattr(sys, "frozen", False):  # pragma: no cover - packaging path
@@ -72,7 +76,21 @@ def _resolve_base_dir() -> Path:
             fallback = Path(local) / ORG_NAME
             (fallback / "storage").mkdir(parents=True, exist_ok=True)
             return fallback
-    return Path(__file__).resolve().parent.parent
+
+    # Default to the user's Documents folder so data lives alongside the
+    # user's own files rather than inside the application installation.
+    documents = Path.home() / "Documents"
+    base = documents / APP_NAME
+    try:
+        base.mkdir(parents=True, exist_ok=True)
+        probe = base / ".write-test"
+        probe.write_bytes(b"")
+        probe.unlink(missing_ok=True)
+        return base
+    except OSError:
+        fallback = Path.home() / ".flatscan"
+        (fallback / "storage").mkdir(parents=True, exist_ok=True)
+        return fallback
 
 
 def _resolve_resource_dir() -> Path:

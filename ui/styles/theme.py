@@ -11,7 +11,7 @@ import re
 from pathlib import Path
 
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QStyleFactory
 
 from app.constants import RESOURCE_ROOT
 
@@ -94,7 +94,8 @@ def load_stylesheet(theme: str = "light") -> str:
 
 
 def apply_theme(app: QApplication, theme: str = "light") -> None:
-    app.setStyle("Fusion")
+    app.setStyle(QStyleFactory.create("Fusion"))
+    app.setProperty("flatscan_theme", theme)
     font = QFont("Segoe UI", 10)
     font.setStyleStrategy(QFont.StyleStrategy.PreferAntialias)
     app.setFont(font)
