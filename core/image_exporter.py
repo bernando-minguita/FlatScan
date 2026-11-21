@@ -106,12 +106,17 @@ def save_raster(
     dpi: int = 300,
     quality: int = 95,
     policy: str = OVERWRITE_RENAME,
+    tiff_compression: str = "tiff_lzw",
 ) -> SaveResult:
     """Write a raster file and embed DPI metadata where the format allows.
 
     The encoded image is written to a ``.part`` staging file first and then
     moved into place, so a failure part-way through (disk full, crash) never
     truncates a previously exported file under the "replace" policy.
+
+    ``tiff_compression`` selects the Pillow TIFF compression scheme
+    (e.g. ``"tiff_lzw"``, ``"tiff_deflate"``, ``"jpeg"``, ``"raw"``,
+    ``"none"``). Only used when ``fmt == "TIFF"``.
     """
 
     fmt = ensure_format(fmt)
@@ -140,7 +145,7 @@ def save_raster(
             options.update(compress_level=6)
             pil_image.save(staging, format="PNG", **options)
         else:  # TIFF
-            options.update(compression="tiff_lzw")
+            options.update(compression=tiff_compression)
             pil_image.save(staging, format="TIFF", **options)
     except OSError as exc:
         _discard(staging)
