@@ -26,7 +26,7 @@ class UnsupportedFormatError(ImageLoadError):
     pass
 
 
-@dataclass
+@dataclass(slots=True)
 class LoadedImage:
     image: np.ndarray
     path: Path | None = None

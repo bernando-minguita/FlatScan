@@ -39,7 +39,7 @@ BACK_WORDS = {"back", "b", "rear", "reverse", "khalf", "khalfi", "2"}
 _SPLIT = re.compile(r"[_\-\s.]+")
 
 
-@dataclass
+@dataclass(slots=True)
 class BatchConfig:
     profile: DocumentProfile
     output_dir: Path
@@ -71,7 +71,7 @@ class BatchConfig:
         )
 
 
-@dataclass
+@dataclass(slots=True)
 class BatchItemResult:
     source_path: str
     status: str
@@ -293,7 +293,7 @@ def pair_key(path: Path | str) -> str:
     return parent or "documents"
 
 
-@dataclass
+@dataclass(slots=True)
 class PairGroup:
     document_id: str
     front: Path | None = None

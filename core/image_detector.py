@@ -11,7 +11,7 @@ from . import corner_detection, perspective
 CONFIDENCE_USABLE = 0.42
 
 
-@dataclass
+@dataclass(slots=True)
 class DetectionResult:
     success: bool
     quad: np.ndarray | None = None

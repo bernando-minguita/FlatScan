@@ -15,7 +15,7 @@ from .image_exporter import ExportError, encode_for_pdf, resolve_target
 MM_PER_POINT = 72.0 / 25.4
 
 
-@dataclass
+@dataclass(slots=True)
 class PdfPageImage:
     index: int          # zero based page index
     image: np.ndarray   # BGR

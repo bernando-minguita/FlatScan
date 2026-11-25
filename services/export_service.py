@@ -31,7 +31,7 @@ _RESERVED_NAMES = {
 }
 
 
-@dataclass
+@dataclass(slots=True)
 class ExportOptions:
     fmt: str = "JPEG"
     dpi: int = 300
@@ -50,7 +50,7 @@ class ExportOptions:
         return value if value in FORMAT_EXTENSIONS else "JPEG"
 
 
-@dataclass
+@dataclass(slots=True)
 class ExportItem:
     display_name: str
     profile_name: str = ""

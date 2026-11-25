@@ -20,7 +20,7 @@ from . import perspective
 DETECTION_MAX_SIDE = 1280
 
 
-@dataclass
+@dataclass(slots=True)
 class Candidate:
     quad: np.ndarray               # ordered in original image coordinates
     score: float = 0.0

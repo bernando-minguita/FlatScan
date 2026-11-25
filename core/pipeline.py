@@ -9,7 +9,7 @@ import numpy as np
 from . import dimension_calculator, enhancement, orientation, perspective, quality_analyzer
 
 
-@dataclass
+@dataclass(slots=True)
 class ProcessingSettings:
     width_mm: float = 85.6
     height_mm: float = 54.0
@@ -36,7 +36,7 @@ class ProcessingSettings:
         )
 
 
-@dataclass
+@dataclass(slots=True)
 class ProcessedDocument:
     base_image: np.ndarray           # warped + rotated, no enhancement
     image: np.ndarray                # final result (base + enhancement)

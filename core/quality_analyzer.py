@@ -14,7 +14,7 @@ CRITICAL = "critical"
 _SEVERITY_ORDER = {INFO: 0, WARNING: 1, CRITICAL: 2}
 
 
-@dataclass
+@dataclass(slots=True)
 class QualityIssue:
     code: str
     severity: str
@@ -26,7 +26,7 @@ class QualityIssue:
         return self.severity in (WARNING, CRITICAL)
 
 
-@dataclass
+@dataclass(slots=True)
 class QualityReport:
     issues: list[QualityIssue]
     blur_score: float

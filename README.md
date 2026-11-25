@@ -41,7 +41,7 @@ projects, processing history and undo/redo are included.
 
 | Item | Value |
 | --- | --- |
-| Application version | 1.0.0 |
+| Application version | 1.1.0 |
 | Verified Python | 3.14.7 (64-bit, Windows 11) |
 | Interface | PySide6 6.12, light theme by default |
 | Image engine | OpenCV 5.0, NumPy 2.5 |

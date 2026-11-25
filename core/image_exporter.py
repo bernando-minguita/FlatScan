@@ -28,7 +28,7 @@ class ExportError(Exception):
     """User-facing export problem."""
 
 
-@dataclass
+@dataclass(slots=True)
 class SaveResult:
     path: Path
     skipped: bool = False

@@ -12,7 +12,7 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
-@dataclass
+@dataclass(slots=True)
 class DocumentProfile:
     id: int | None = None
     name: str = ""
@@ -61,7 +61,7 @@ class DocumentProfile:
         return copy.deepcopy(self)
 
 
-@dataclass
+@dataclass(slots=True)
 class ProjectRecord:
     id: str
     name: str = ""
@@ -125,7 +125,7 @@ class ProjectRecord:
         return bool(self.source_path) and Path(self.source_path).exists()
 
 
-@dataclass
+@dataclass(slots=True)
 class BatchItemRecord:
     id: int | None = None
     job_id: str = ""
@@ -154,7 +154,7 @@ class BatchItemRecord:
         )
 
 
-@dataclass
+@dataclass(slots=True)
 class BatchJobRecord:
     id: str = ""
     name: str = ""
@@ -183,7 +183,7 @@ class BatchJobRecord:
         )
 
 
-@dataclass
+@dataclass(slots=True)
 class DashboardStats:
     total_processed: int = 0
     successful: int = 0

@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling>=1.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "flatscan"
+version = "1.1.0"
+description = "Perspective correction for ID cards and documents — offline Windows desktop application"
+requires-python = ">=3.14"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "FlatScan" }]
+dependencies = [
+    "PySide6>=6.12,<7",
+    "numpy>=2.3,<3",
+    "Pillow>=12.0,<13",
+    "PyMuPDF>=2.0,<3",
+    "opencv-python-headless>=5.0,<6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.14",
+    "ty>=0.0",
+]
+test = [
+    "pytest>=9,<10",
+]
+
+[tool.ruff]
+line-length = 120
+src = []
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "C4", "UP"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ty]
+python-version = "3.14"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = ["-q", "--strict-markers"]
+filterwarnings = ["ignore::DeprecationWarning"]

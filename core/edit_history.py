@@ -16,7 +16,7 @@ import numpy as np
 from . import enhancement, perspective
 
 
-@dataclass
+@dataclass(slots=True)
 class EditState:
     corners: list[list[float]]
     rotation: int = 0
