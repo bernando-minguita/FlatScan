@@ -5,7 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import QUrl, Qt, Signal
+from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
@@ -369,6 +370,7 @@ class ExportCenterPage(QWidget):
         self._items: list[ExportItem] = []
         self._worker: ExportWorker | None = None
         self._cancelling = False
+        self._last_export_dir: Path | None = None
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(26, 22, 26, 20)
@@ -541,6 +543,12 @@ class ExportCenterPage(QWidget):
         self.log.setWordWrap(True)
         self.log.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         bottom_layout.addWidget(self.log)
+        self._open_folder_button = QPushButton("Open folder")
+        self._open_folder_button.setIcon(make_icon("folder", "#475569", 14))
+        self._open_folder_button.setToolTip("Open the export destination folder")
+        self._open_folder_button.setVisible(False)
+        self._open_folder_button.clicked.connect(self._open_last_export_folder)
+        bottom_layout.addWidget(self._open_folder_button)
         layout.addWidget(bottom_card, 1)
 
         self.format_combo.currentTextChanged.connect(self._on_format_changed)
@@ -789,6 +797,7 @@ class ExportCenterPage(QWidget):
             }
         )
         self._ctx.save_settings()
+        self._last_export_dir = options.output_dir
 
         self._worker = ExportWorker(
             self._ctx.exports, items, options, combine_pdf=combine, pdf_stem="documents", parent=self
@@ -849,6 +858,10 @@ class ExportCenterPage(QWidget):
                 "Export failed", "; ".join(summary.get("errors", [""])[:2]), problem=True
             )
         paths = summary.get("paths", [])
+        if succeeded > 0:
+            self._open_folder_button.setVisible(True)
+        else:
+            self._open_folder_button.setVisible(False)
         if paths:
             self.log.setText("Saved: " + "  ·  ".join(paths[:3]) + ("…" if len(paths) > 3 else ""))
         elif summary.get("errors"):
@@ -859,3 +872,17 @@ class ExportCenterPage(QWidget):
             # destroyed while its thread is still running.
             self._worker.wait(5000)
         self._worker = None
+
+    def _open_last_export_folder(self) -> None:
+        """Open the export destination folder in the system file manager."""
+        folder = self._last_export_dir
+        if folder is None:
+            folder = Path(self.dir_edit.text().strip() or ".")
+        if not folder.exists():
+            QMessageBox.warning(
+                self,
+                "Folder not found",
+                f"The export folder could not be found:\n{folder}",
+            )
+            return
+        QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder)))

@@ -7,8 +7,8 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QTimer, Signal
-from PySide6.QtGui import QColor, QKeySequence, QShortcut
+from PySide6.QtCore import QTimer, QUrl, Signal, Qt
+from PySide6.QtGui import QColor, QDesktopServices, QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QAbstractSpinBox,
     QApplication,
@@ -1576,7 +1576,17 @@ class CorrectionStudioPage(QWidget):
             self.project.output_path = str(paths[0])
             self.ctx.projects.mark_exported(self.project)
         self.historyChanged.emit()
-        self.notifyRequested.emit(f"Exported {paths[0].name}", "success")
+        msg = QMessageBox(self)
+        msg.setIcon(QMessageBox.Icon.Information)
+        msg.setWindowTitle("Export complete")
+        msg.setText(f"Exported '{paths[0].name}'")
+        msg.setInformativeText(f"The corrected document has been written to:\n{paths[0]}")
+        open_button = msg.addButton("Open folder", QMessageBox.ButtonRole.ActionRole)
+        msg.addButton(QMessageBox.StandardButton.Ok)
+        msg.setDefaultButton(QMessageBox.StandardButton.Ok)
+        msg.exec()
+        if msg.clickedButton() is open_button:
+            QDesktopServices.openUrl(QUrl.fromLocalFile(str(paths[0].parent)))
     # -------------------------------------------------------------- enablement
     def _set_controls_enabled(self, enabled: bool) -> None:
         for widget in (

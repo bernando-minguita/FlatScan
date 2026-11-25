@@ -5,8 +5,8 @@ from __future__ import annotations
 import uuid
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor
+from PySide6.QtCore import QUrl, Qt, Signal
+from PySide6.QtGui import QColor, QDesktopServices
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
@@ -95,6 +95,7 @@ class BatchPage(QWidget):
         self._job_id: str | None = None
         self._pair_worker: LatestTaskWorker | None = None
         self._last_config: BatchConfig | None = None
+        self._last_output_dir: Path | None = None
         self._build_ui()
         self._refresh_profiles()
 
@@ -332,6 +333,12 @@ class BatchPage(QWidget):
         self.progress = ProgressPanel("Cancel batch")
         self.progress.cancelRequested.connect(self._cancel)
         bottom_layout.addWidget(self.progress)
+        self._open_folder_button = QPushButton("Open folder")
+        self._open_folder_button.setIcon(make_icon("folder", "#475569", 14))
+        self._open_folder_button.setToolTip("Open the batch output folder")
+        self._open_folder_button.setVisible(False)
+        self._open_folder_button.clicked.connect(self._open_last_output_folder)
+        bottom_layout.addWidget(self._open_folder_button)
 
         actions = QHBoxLayout()
         self.start_button = QPushButton("Start batch")
@@ -579,6 +586,7 @@ class BatchPage(QWidget):
         except OSError as exc:
             QMessageBox.critical(self, "Output folder", f"The output folder cannot be created:\n{exc}")
             return
+        self._last_output_dir = config.output_dir
         if config.policy == "replace":
             answer = QMessageBox.question(
                 self,
@@ -745,6 +753,10 @@ class BatchPage(QWidget):
         self._job_id = None
         self._set_busy(False)
         self._update_counts()
+        if succeeded > 0:
+            self._open_folder_button.setVisible(True)
+        else:
+            self._open_folder_button.setVisible(False)
         self.historyChanged.emit()
         self.notifyRequested.emit(text, "warning" if failed else "success")
 
@@ -933,6 +945,20 @@ class BatchPage(QWidget):
             QMessageBox.information(self, "Select a file", "Select a row to open in the Studio.")
             return
         self.reviewRequested.emit(str(self._rows[rows[0]]["path"]))
+
+    def _open_last_output_folder(self) -> None:
+        """Open the batch output folder in the system file manager."""
+        folder = self._last_output_dir
+        if folder is None:
+            folder = Path(self.output_edit.text().strip() or ".")
+        if not folder.exists():
+            QMessageBox.warning(
+                self,
+                "Folder not found",
+                f"The batch output folder could not be found:\\n{folder}",
+            )
+            return
+        QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder)))
 
     def shutdown(self) -> None:
         if self._worker is not None and self._worker.isRunning():

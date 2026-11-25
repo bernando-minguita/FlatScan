@@ -377,7 +377,17 @@ class HistoryPage(QWidget):
             self.ctx.projects.mark_exported(record)
             self.refresh()
             self.historyChanged.emit()
-            self.notifyRequested.emit(f"Exported {paths[0].name}", "success")
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Information)
+            msg.setWindowTitle("Export complete")
+            msg.setText(f"Exported '{paths[0].name}'")
+            msg.setInformativeText(f"The corrected document has been written to:\n{paths[0]}")
+            open_button = msg.addButton("Open folder", QMessageBox.ButtonRole.ActionRole)
+            msg.addButton(QMessageBox.StandardButton.Ok)
+            msg.setDefaultButton(QMessageBox.StandardButton.Ok)
+            msg.exec()
+            if msg.clickedButton() is open_button:
+                QDesktopServices.openUrl(QUrl.fromLocalFile(str(paths[0].parent)))
 
     def _delete(self) -> None:
         record = self._selected_record()
